@@ -130,4 +130,17 @@ int main() {
     ws2811_fini(&ledstring);
     return ret;
 }
+ledtree2.c: In function ‘traverseList’:
+ledtree2.c:74:32: warning: ‘sizeof’ on array function parameter ‘oddColors’ will return size of ‘uint32_t *’ {aka ‘unsigned int *’} [-Wsizeof-array-argument]
+     int num_odd_colors = sizeof(oddColors) / sizeof(oddColors[0]);
+                                ^
+ledtree2.c:70:44: note: declared here
+ void traverseList(TreeNode* root, uint32_t oddColors[], uint32_t evenColors[]) {
+                                   ~~~~~~~~~^~~~~~~~~~~
+ledtree2.c:75:33: warning: ‘sizeof’ on array function parameter ‘evenColors’ will return size of ‘uint32_t *’ {aka ‘unsigned int *’} [-Wsizeof-array-argument]
+     int num_even_colors = sizeof(evenColors) / sizeof(evenColors[0]);
+                                 ^
+ledtree2.c:70:66: note: declared here
+ void traverseList(TreeNode* root, uint32_t oddColors[], uint32_t evenColors[]) {
+
 
