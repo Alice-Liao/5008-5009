@@ -45,14 +45,27 @@ TreeNode* createNode(int led_index) {
     return newNode;
 }
 
-void traverseList(TreeNode* root) {
+void traverseList(TreeNode* root, uint32_t oddColors[], uint32_t evenColors[]) {
     TreeNode* current = root;
 
     int num_leds = ledstring.channel[0].count;
+    int num_odd_colors = sizeof(oddColors) / sizeof(oddColors[0]);
+    int num_even_colors = sizeof(evenColors) / sizeof(evenColors[0]);
 
     // Set the LED colors based on their index
     for (int i = 0; i < num_leds; i++) {
-        uint32_t color = i % 2 == 0 ? 0x00FF00 : 0xFF0000;
+        uint32_t color;
+
+        if (i % 2 == 0) {
+            // Even index
+            int index = i / 2 % num_even_colors;
+            color = evenColors[index];
+        } else {
+            // Odd index
+            int index = (i - 1) / 2 % num_odd_colors;
+            color = oddColors[index];
+        }
+
         ledstring.channel[0].leds[i] = color;
     }
 }
@@ -61,18 +74,16 @@ void freeList(TreeNode* root) {
     TreeNode* tmp;
 
     while (root != NULL) {
-       tmp = root;
-       root = root->next;
-       free(tmp);
+        tmp = root;
+        root = root->next;
+        free(tmp);
     }
 }
 
-int main()
-{
+int main() {
     ws2811_return_t ret;
 
-    if ((ret = ws2811_init(&ledstring)) != WS2811_SUCCESS)
-    {
+    if ((ret = ws2811_init(&ledstring)) != WS2811_SUCCESS) {
         fprintf(stderr, "ws2811_init failed: %s\n", ws2811_get_return_t_str(ret));
         return ret;
     }
@@ -89,12 +100,17 @@ int main()
 
     int seconds_elapsed = 0;
 
-    while (1) {
-        if (seconds_elapsed < 1) {
-            traverseList(root);
+    // Define the colors for odd and even lights
+    uint32_t oddColors[] = {0xF8B195, 0xF67280, 0xC06C84, 0x6C5B7B, 0x355C7D};
+    uint32_t evenColors[] = {0x99B898, 0xFECEAB, 0xFF847C, 0xE84A5F, 0x2A363B};
+
+    while (seconds_elapsed < 16) {
+        if (seconds_elapsed % 2 == 0) {
+            // Even seconds: Turn on even lights
+            traverseList(root, oddColors, evenColors);
         } else {
-            // Turn off all LEDs
-            memset(ledstring.channel[0].leds, 0, LED_COUNT * sizeof(ws2811_led_t));
+            // Odd seconds: Turn on odd lights
+            traverseList(root, evenColors, oddColors);
         }
 
         ws2811_render(&ledstring);
@@ -104,9 +120,14 @@ int main()
         seconds_elapsed++;
     }
 
+    // Turn off all LEDs
+    memset(ledstring.channel[0].leds, 0, LED_COUNT * sizeof(ws2811_led_t));
+    ws2811_render(&ledstring);
+
     // Free the memory allocated for the list
     freeList(root);
 
     ws2811_fini(&ledstring);
     return ret;
 }
+
