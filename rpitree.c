@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <ws2811.h>
+#include <unistd.h>
 
 #define TARGET_FREQ             WS2811_TARGET_FREQ
 #define GPIO_PIN                18  // this should be the GPIO pin you connected DIN to
@@ -97,7 +98,7 @@ int main()
 
         ws2811_render(&ledstring);
 
-        delay(1000); // wait for 1 second
+        usleep(1000000); // wait for 1 second
     }
 
     // Free the memory allocated for the list
