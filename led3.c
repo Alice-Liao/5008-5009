@@ -56,11 +56,11 @@ void traverseList(TreeNode* root, uint32_t oddColors[], int num_odd_colors, uint
 
         if (i % 2 == 0) {
             // Even index
-            int index = i / 2 % num_even_colors;
+            int index = (i / 2) % num_even_colors;
             color = evenColors[index];
         } else {
             // Odd index
-            int index = (i - 1) / 2 % num_odd_colors;
+            int index = (i / 2) % num_odd_colors;
             color = oddColors[index];
         }
 
